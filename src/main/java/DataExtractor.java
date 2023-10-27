@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.Map;
 
 public class DataExtractor {
-    public static void extractData() {
+    public static void extractData(String excelFilePath) {
         LinkedHashMap<String, Object> jsonMap = new LinkedHashMap<>();
         String courseName = "courseName";
         List<String> daysList = List.of("sunday", "monday", "tuesday", "wednesday", "thursday");
-        String excelFilePath = "src/main/resources/ROOMz.20231.xlsx";
+
         FileInputStream inputStream = Utils.getExcelFile(excelFilePath);
         XSSFWorkbook workbook = Utils.getExcelWorkbook(inputStream);
         if (inputStream == null || workbook == null) {

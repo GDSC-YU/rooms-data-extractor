@@ -1,5 +1,5 @@
 public class Main {
     public static void main(String[] args) {
-        DataExtractor.extractData();
+        DataExtractor.extractData("src/main/resources/ROOMz.20231.xlsx");
     }
 }
