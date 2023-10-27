@@ -1,24 +1,26 @@
 // apache library imports
+
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.util.CellAddress;
-import org.apache.poi.xssf.usermodel.*;
-// necessary java imports
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+
 public class DataExtractor {
-    public static void extractData(){
+    public static void extractData() {
         LinkedHashMap<String, Object> jsonMap = new LinkedHashMap<>();
         String courseName = "courseName";
         List<String> daysList = List.of("sunday", "monday", "tuesday", "wednesday", "thursday");
         String excelFilePath = "src/main/resources/ROOMz.20231.xlsx";
         FileInputStream inputStream = Utils.getExcelFile(excelFilePath);
         XSSFWorkbook workbook = Utils.getExcelWorkbook(inputStream);
-        if(inputStream == null || workbook == null) {
+        if (inputStream == null || workbook == null) {
             return;
         }
 
@@ -39,6 +41,13 @@ public class DataExtractor {
                 continue;
             }
 
+            //include only tuwaiq rooms
+            String currentRoom = roomCell.getStringCellValue().trim();
+            if (!(currentRoom.startsWith("E") || currentRoom.startsWith("F") || currentRoom.startsWith("G") || currentRoom.startsWith("H"))) {
+                continue;
+            }
+
+
             LinkedHashMap<String, Object> innerMap = new LinkedHashMap<>();
             innerMap.put("name", roomCell.getStringCellValue());
             // initializing each day as null the semicolons are used to format it into json
@@ -55,15 +64,14 @@ public class DataExtractor {
                 }
                 String dayCellString = daysCell.getStringCellValue().toLowerCase();
 
-                for (int coursesRowNum = daysRow.getRowNum() + 2;; coursesRowNum++) {
+                for (int coursesRowNum = daysRow.getRowNum() + 2; ; coursesRowNum++) {
                     LinkedHashMap<String, Object> courseDetailsMap = new LinkedHashMap<>();
                     XSSFRow coursesRow = sheet.getRow(coursesRowNum);
                     if (coursesRow == null || coursesRow.getLastCellNum() <= 1) {
                         break;
                     }
                     XSSFCell courseCell = coursesRow.getCell(j);
-                    if (courseCell.getCellType() != CellType.STRING
-                            || coursesRow.getCell(0).getCellType() == CellType.BLANK) {
+                    if (courseCell.getCellType() != CellType.STRING || coursesRow.getCell(0).getCellType() == CellType.BLANK) {
                         continue;
                     }
                     String courseTimeStart = coursesRow.getCell(0).getStringCellValue();
@@ -81,8 +89,7 @@ public class DataExtractor {
                     if (!dayCourses.isEmpty()) {
                         LinkedHashMap<String, Object> freeTimeMap = new LinkedHashMap<>();
                         LinkedHashMap<String, Object> prevEntry = dayCourses.get(dayCourses.size() - 1);
-                        LinkedHashMap<String, String> prevTimeEnd = (LinkedHashMap<String, String>) prevEntry
-                                .get("timeEnd");
+                        LinkedHashMap<String, String> prevTimeEnd = (LinkedHashMap<String, String>) prevEntry.get("timeEnd");
                         freeTimeMap.put("timeStart", prevTimeEnd);
                         freeTimeMap.put("timeEnd", startTimesMap);
                         freeTimeMap.put("courseName", "Free");
@@ -126,7 +133,6 @@ public class DataExtractor {
         }
         Utils.saveStrToFile(jsonMapString.toString());
     }
-
 
 
 }
