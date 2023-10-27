@@ -7,33 +7,32 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Utils {
-    public static FileInputStream getExcelFile(String filePath){
+    public static FileInputStream getExcelFile(String filePath) {
         try {
             return new FileInputStream(filePath);
-        }
-        catch (FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             System.err.println("Error opening excel file: " + e.getMessage());
             return null;
         }
     }
 
-    public static XSSFWorkbook getExcelWorkbook(FileInputStream inputStream){
-        try{
+    public static XSSFWorkbook getExcelWorkbook(FileInputStream inputStream) {
+        try {
             return new XSSFWorkbook(inputStream);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             System.err.println("Error accessing excel workbook" + e.getMessage());
             return null;
         }
     }
 
-    public static void closeWorkBook(XSSFWorkbook workbook){
+    public static void closeWorkBook(XSSFWorkbook workbook) {
         try {
             workbook.close();
         } catch (IOException e) {
             System.err.println("Error in closing the workbook " + e.getMessage());
         }
     }
+
     public static Integer convertTOInt(String str) {
         try {
             return Integer.parseInt(str);
@@ -54,17 +53,16 @@ public class Utils {
         if (courseTime.endsWith("PM") && hour != 12) {
             hour += 12;
         }
-        LinkedHashMap<String, String> timesMap = new LinkedHashMap<>(
-                Map.of("hour", ";" + hour + ";"));
+        LinkedHashMap<String, String> timesMap = new LinkedHashMap<>(Map.of("hour", ";" + hour + ";"));
         timesMap.put("minute", ";" + minute + ";");
         return timesMap;
     }
 
-    public static File createOutputFile(){
+    public static File createOutputFile() {
         String fileName = "src/main/resources/output.txt";
         File file = new File(fileName);
         try {
-             file.createNewFile();
+            file.createNewFile();
             return file;
         } catch (IOException e) {
             System.err.println("Error in creating file");
@@ -72,6 +70,7 @@ public class Utils {
 
         }
     }
+
     public static void saveStrToFile(String input) {
 
         File file = createOutputFile();
