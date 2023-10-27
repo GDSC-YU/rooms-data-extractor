@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DataExtractor {
     public static void extractData() {
@@ -23,7 +24,6 @@ public class DataExtractor {
         if (inputStream == null || workbook == null) {
             return;
         }
-
 
         XSSFSheet sheet = workbook.getSheetAt(0);
         CellAddress firstRoomCell = new CellAddress("Y4");
@@ -41,12 +41,12 @@ public class DataExtractor {
                 continue;
             }
 
-            //include only tuwaiq rooms
+            // include only tuwaiq rooms
             String currentRoom = roomCell.getStringCellValue().trim();
-            if (!(currentRoom.startsWith("E") || currentRoom.startsWith("F") || currentRoom.startsWith("G") || currentRoom.startsWith("H"))) {
+            if (!(currentRoom.startsWith("E") || currentRoom.startsWith("F") || currentRoom.startsWith("G")
+                    || currentRoom.startsWith("H"))) {
                 continue;
             }
-
 
             LinkedHashMap<String, Object> innerMap = new LinkedHashMap<>();
             innerMap.put("name", roomCell.getStringCellValue());
@@ -64,18 +64,18 @@ public class DataExtractor {
                 }
                 String dayCellString = daysCell.getStringCellValue().toLowerCase();
 
-                for (int coursesRowNum = daysRow.getRowNum() + 2; ; coursesRowNum++) {
+                for (int coursesRowNum = daysRow.getRowNum() + 2;; coursesRowNum++) {
                     LinkedHashMap<String, Object> courseDetailsMap = new LinkedHashMap<>();
                     XSSFRow coursesRow = sheet.getRow(coursesRowNum);
                     if (coursesRow == null || coursesRow.getLastCellNum() <= 1) {
                         break;
                     }
                     XSSFCell courseCell = coursesRow.getCell(j);
-                    if (courseCell.getCellType() != CellType.STRING || coursesRow.getCell(0).getCellType() == CellType.BLANK) {
+                    if (courseCell.getCellType() != CellType.STRING
+                            || coursesRow.getCell(0).getCellType() == CellType.BLANK) {
                         continue;
                     }
                     String courseTimeStart = coursesRow.getCell(0).getStringCellValue();
-
 
                     LinkedHashMap<String, String> startTimesMap = Utils.formatToMap(courseTimeStart);
 
@@ -86,14 +86,28 @@ public class DataExtractor {
                     courseDetailsMap.put("timeStart", startTimesMap);
                     courseDetailsMap.put("timeEnd", endTimesMap);
                     courseDetailsMap.put(courseName, courseCell.getStringCellValue());
+
                     if (!dayCourses.isEmpty()) {
                         LinkedHashMap<String, Object> freeTimeMap = new LinkedHashMap<>();
                         LinkedHashMap<String, Object> prevEntry = dayCourses.get(dayCourses.size() - 1);
-                        LinkedHashMap<String, String> prevTimeEnd = (LinkedHashMap<String, String>) prevEntry.get("timeEnd");
+
+                        LinkedHashMap<String, String> prevTimeEnd = null;
+                        Object prevTimeEndObject = prevEntry.get("timeEnd");
+                        if (prevTimeEndObject instanceof LinkedHashMap<?, ?>) {
+                            LinkedHashMap<?, ?> rawPrevTimeEnd = (LinkedHashMap<?, ?>) prevTimeEndObject;
+                            prevTimeEnd = new LinkedHashMap<>();
+                            for (Map.Entry<?, ?> entry : rawPrevTimeEnd.entrySet()) {
+                                if (entry.getKey() instanceof String && entry.getValue() instanceof String) {
+                                    prevTimeEnd.put((String) entry.getKey(), (String) entry.getValue());
+                                }
+                            }
+                        }
+
                         freeTimeMap.put("timeStart", prevTimeEnd);
                         freeTimeMap.put("timeEnd", startTimesMap);
                         freeTimeMap.put("courseName", "Free");
                         dayCourses.add(freeTimeMap);
+
                     }
                     dayCourses.add(courseDetailsMap);
 
@@ -133,6 +147,5 @@ public class DataExtractor {
         }
         Utils.saveStrToFile(jsonMapString.toString());
     }
-
 
 }
