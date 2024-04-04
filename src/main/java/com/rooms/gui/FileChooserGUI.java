@@ -80,15 +80,7 @@ public class FileChooserGUI extends Application {
             // Simulate processing (you can replace this with your actual processing logic)
             Task<Void> task = new Task<>() {
                 @Override
-                protected Void call() {
-                    for (int i = 0; i <= 100; i++) {
-                        try {
-                            Thread.sleep(50); // Simulate processing time
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        updateProgress(i, 100);
-                    }
+                protected Void call(){
                     DataExtractor.extractData(destinationFilePath);
                     return null;
                 }
