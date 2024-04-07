@@ -31,15 +31,15 @@ public class FileChooserGUI extends Application {
         VBox root = new VBox();
         root.setSpacing(20);
         root.setAlignment(Pos.CENTER);
-        root.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
-
+        //root.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+        root.setStyle("-fx-background-color: linear-gradient(to top, #808080, #383838);");
         Button chooseFileButton = new Button("Choose Excel File");
-        chooseFileButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
-        chooseFileButton.setOnAction(event -> chooseFile(primaryStage));
-
+        chooseFileButton.setStyle("-fx-base: orange; -fx-border-color:orange; -fx-text-fill: white;");
+        chooseFileButton.setOnAction(event ->chooseFile(primaryStage));
+       //color change pb 
         progressBar = new ProgressBar();
         progressBar.setVisible(false);
-
+        progressBar.setStyle("-fx-accent:lightgreen;");
         statusLabel = new Label();
         statusLabel.setStyle("-fx-text-fill: #FF0000;");
 
