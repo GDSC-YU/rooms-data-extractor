@@ -2,15 +2,12 @@ package com.rooms.gui;
 
 import javafx.application.Application;
 import javafx.concurrent.Task;
-//import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-//import javafx.scene.layout.Background;
-//import javafx.scene.layout.BackgroundFill;
-//import javafx.scene.layout.CornerRadii;
+import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
@@ -31,12 +28,10 @@ public class FileChooserGUI extends Application {
         VBox root = new VBox();
         root.setSpacing(20);
         root.setAlignment(Pos.CENTER);
-        //root.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
-        root.setStyle("-fx-background-color: linear-gradient(to top, #808080, #383838);");
+        root.setStyle("-fx-background-color: white");
         Button chooseFileButton = new Button("Choose Excel File");
-        chooseFileButton.setStyle("-fx-base: orange; -fx-border-color:orange; -fx-text-fill: white;");
+        chooseFileButton.setStyle("-fx-base: orange; -fx-text-fill: white; -fx-background-radius: 15px;");
         chooseFileButton.setOnAction(event ->chooseFile(primaryStage));
-       //color change pb 
         progressBar = new ProgressBar();
         progressBar.setVisible(false);
         progressBar.setStyle("-fx-accent:lightgreen;");
@@ -46,7 +41,10 @@ public class FileChooserGUI extends Application {
         root.getChildren().addAll(chooseFileButton, progressBar, statusLabel);
 
         Scene scene = new Scene(root, 400, 300);
+        Image programIcon = new Image("cal-icon.png");
+        primaryStage.getIcons().add(programIcon);
         primaryStage.setScene(scene);
+        primaryStage.setTitle("YU Rooms");
         primaryStage.show();
     }
 
@@ -59,29 +57,27 @@ public class FileChooserGUI extends Application {
             progressBar.setVisible(true); // Show the progress bar
             setStatus("Processing file...", Color.BLACK); // Change status to indicate processing
 
-            // Define the destination folder (src/main/java)
-            String destinationFolder = "src/main/resources/";
+//            Saving file functionality (removed, no need to save the Excel file)
+//            String destinationFolder = "src/main/resources/";
+//
+//            // Define the destination file path
+//            String destinationFilePath = destinationFolder + selectedFile.getName();
+//
+//            // Create the destination file
+//            File destinationFile = new File(destinationFilePath);
 
-            // Define the destination file path
-            String destinationFilePath = destinationFolder + selectedFile.getName();
+//            try {
+//                // Copy the selected file to the destination folder
+//                Files.copy(selectedFile.toPath(), destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                setStatus("Error saving file.", Color.RED);
+//            }
 
-            // Create the destination file
-            File destinationFile = new File(destinationFilePath);
-
-            try {
-                // Copy the selected file to the destination folder
-                Files.copy(selectedFile.toPath(), destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-//                setStatus("File saved to: " + destinationFilePath, Color.GREEN);
-            } catch (IOException e) {
-                e.printStackTrace();
-                setStatus("Error saving file.", Color.RED);
-            }
-
-            // Simulate processing (you can replace this with your actual processing logic)
             Task<Void> task = new Task<>() {
                 @Override
                 protected Void call(){
-                    DataExtractor.extractData(destinationFilePath);
+                    DataExtractor.extractData(selectedFile.getPath());
                     return null;
                 }
             };
@@ -92,7 +88,7 @@ public class FileChooserGUI extends Application {
             });
 
             task.setOnFailed(event -> {
-                setStatus("Error processing file.", Color.RED);
+                setStatus("Error processing file. Incorrect Format", Color.RED);
                 progressBar.setVisible(false); // Hide the progress bar
             });
 
