@@ -41,7 +41,7 @@ public class FileChooserGUI extends Application {
         root.getChildren().addAll(chooseFileButton, progressBar, statusLabel);
 
         Scene scene = new Scene(root, 400, 300);
-        Image programIcon = new Image("cal-icon.png");
+        Image programIcon = new Image("gdsc-logo.png");
         primaryStage.getIcons().add(programIcon);
         primaryStage.setScene(scene);
         primaryStage.setTitle("YU Rooms");
